@@ -1,0 +1,57 @@
+''' Packages to read text reports '''
+import os, sys packages to read from disk
+import requests or Beautiful Soup package for accessing web
+import PyPDF2 package for PDFs
+import docx package for Word documents
+
+''' Packages for text Cleaning '''
+import re
+import nltk
+download nltk stop words
+
+''' Packages for exploratory analysis '''
+import WordCloud
+
+''' Packages for Latent Dirichlet Allocation model '''
+import gensim 
+import simple_preprocess from gensim
+import corpora from gensim
+import pyLDAvis 
+
+''' Clean text data '''
+Set cleanTexts to []
+For each report in Reports:
+    str(report)
+    Remove punctuations from report
+    Remove excess whitespaces (e.g. \n, \t) from report
+    Convert report to lower case
+    Append report to cleanTexts
+End for
+
+
+''' Generate word cloud to explore and find a good numTopics for LDA '''
+Create word cloud object
+Set long_string to Join all texts in cleanTexts with ' ' delimiter
+Generate word cloud from long_string
+
+''' Preprocessing data for LDA '''
+Set blackList to downloaded nltk engish stop words
+Append any additional unwanted words to blackList (if needed)
+Set wordTokens to [[word For each word in simple_preprocess(text) if word not in blackList] For each text in cleanTexts]
+# A dictionary mapping each word with an id
+Set wordIDs to corpora.Dictionary(wordTokens)
+# A list containing word frequency for each id
+Set corpus to [corpusDict.doc2bow(t) for t in wordTokens]
+
+''' Creating LDA model '''
+Set numTopics based on word cloud visual
+Build lda_model object with corpus, wordIDs and numTopics parameters
+
+``` Visualise model ```
+Set visual to pyLDAvis.gensim.prepare(lda_model, corpus, wordIDs)
+Save visual to file such as html
+
+
+
+
+
