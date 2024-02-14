@@ -41,7 +41,7 @@ Set wordTokens to [[word For each word in simple_preprocess(text) if word not in
 # A dictionary mapping each word with an id
 Set wordIDs to corpora.Dictionary(wordTokens)
 # A list containing word frequency for each id
-Set corpus to [corpusDict.doc2bow(t) for t in wordTokens]
+Set corpus to [wordIDs.doc2bow(t) for t in wordTokens]
 
 ''' Creating LDA model '''
 Set numTopics based on word cloud visual
