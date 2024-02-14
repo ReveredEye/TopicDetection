@@ -1,0 +1,76 @@
+''' Packages to read text reports '''
+import os, sys packages to read from disk
+import requests or Beautiful Soup packages for accessing web
+import PyPDF2 package for PDFs
+import docx package for Word documents
+
+''' Packages for text Cleaning '''
+import re
+import nltk
+download nltk stop words
+
+''' Packages for exploratory analysis '''
+import WordCloud
+
+''' Packages for Latent Dirichlet Allocation model '''
+import numpy as np
+import pandas as pd
+import gensim 
+from gensim.utils import simple_preprocess
+import gensim.corpora as corpora
+from gensim.models import LDAMultiCore, CoherenceModel
+import pyLDAvis 
+
+''' Clean text data '''
+Set cleanTexts to []
+For each report in Reports:
+    Set report to str(report)
+    Remove punctuations from report
+    Replace excess whitespaces (e.g. \n, \t) to ' ' from report
+    Convert report to lower case
+    Append report to cleanTexts
+End for
+
+''' Generate word cloud to explore and find a good intuitive range for number of topics in LDA model '''
+Create word cloud object
+Set long_string to Join all texts in cleanTexts with ' ' delimiter
+Generate word cloud from long_string
+Produce image of word cloud
+
+''' Preprocessing data for LDA '''
+Set blackList to downloaded nltk engish stop words
+Append any additional unwanted words to blackList (if needed)
+Set wordTokens to [[word For each word in simple_preprocess(text) if word not in blackList] For each text in cleanTexts]
+# A dictionary mapping each word with an id
+Set wordIDs to corpora.Dictionary(wordTokens)
+# A list containing word frequency for each word id
+Set corpus to [wordIDs.doc2bow(t) for t in wordTokens]
+
+''' Creating LDA models and evaluating for best model '''
+Set topicRange to np array of integers based of intuition on word cloud image
+Set alpha to np array from 0.01 to 1
+Set beta to np array from 0.01 to 1
+Set topicLen to len(topicRange)
+Set aLen to len(alpha)
+set bLen to len(beta)
+Set resultsMat to np.zeros((topicLen * aLen * bLen, 4))
+For each i, numTopics in enumerate(topicRange):
+    For each j, a in enumerate(alpha):
+        For each k, b in enumerate(beta):
+            Set ldaModel to LDAMultiCore object with corpus, wordIDs, numTopics, a and b parameters
+            Set coherence to coherence score from lda_model using CoherenceModel
+            Set resultsMat[i * aLen * bLen + j * bLen + k, :] to [numTopics, a, b, coherence]
+        End for
+    End for
+End for
+Set resultsDF to pd.DataFrame(resultsMat, columns = ['Topics', 'Alpha', 'Beta', 'Coherence'])
+Set topicsAgg to Group by resultsDF on 'Topics' and aggregate mean on 'Coherence'
+Plot topicsAgg to see optimal number of topics (i.e. where the plot starts to flatten)
+Set optTopic to optimal number of topics
+Set optResults to resultsDF[resultsDF['Topics'] == optTopic]
+Set optParams to optResults.iloc[optResults['Coherence'].idxmax()]
+Set optModel to LDAMultiCore object with corpus, wordIDs, optTopic, optParams['Alpha'], optParams['Beta']
+
+``` Visualise model ```
+Set visual to pyLDAvis.gensim.prepare(optModel, corpus, wordIDs)
+Save visual to file such as html
